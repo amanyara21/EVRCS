@@ -12,7 +12,7 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
  <meta-data
      android:name="com.google.android.geo.API_KEY"
      android:value="YOUR_MAPS_API_KEY"/>
-     ```
+   ```
 
 ## Step 2: Start the Metro Server
 
