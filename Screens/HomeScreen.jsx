@@ -150,7 +150,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.main}>
        
           <View style={styles.container}>
-            {/* <MapView
+            <MapView
               ref={mapViewRef}
               style={styles.map}
               initialRegion={{
@@ -169,7 +169,7 @@ const HomeScreen = ({ navigation }) => {
                   strokeColor="#101944"
                 />
               )}
-            </MapView> */}
+            </MapView>
 
           </View>
           <View style={styles.list}>
