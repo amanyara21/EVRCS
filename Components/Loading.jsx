@@ -1,28 +1,13 @@
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text} from 'react-native';
-import AnimatedLoader from 'react-native-animated-loader';
-
-export default function Loading() {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    setInterval(() => {
-      setVisible(!visible);
-    }, 2000);
-  }, []);
-
+import LoaderKit from 'react-native-loader-kit'
+import {View,Dimensions} from 'react-native'
+export default function Loading({color}) {
   return (
-    <AnimatedLoader
-      visible={visible}
-      overlayColor="rgba(255,255,255,0.75)"
-      animationStyle={styles.lottie}
-      speed={1}>
-      <Text>Doing something...</Text>
-    </AnimatedLoader>
+    <View style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, position:'relative' }}>
+      <LoaderKit
+        style={{ width: 100, height: 100, position:'absolute', left:'40%', top:'40%' }}
+        name={'BallClipRotateMultiple'} 
+        color={color}
+      />
+    </View>
   );
 }
-const styles = StyleSheet.create({
-  lottie: {
-    width: 100,
-    height: 100,
-  },
-});

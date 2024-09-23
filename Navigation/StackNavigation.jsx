@@ -7,15 +7,17 @@ import SignupScreen from '../Screens/SignupScreen';
 import AuthScreen from '../Screens/AuthScreen';
 import BookingScreen from '../Screens/BookingScreen';
 import ReviewScreen from '../Screens/ReviewScreen';
-
+import SplashScreen from '../Screens/SplashScreen';
+import ShowPaymentScreen from '../Screens/ShowPaymentScreen';
 
 const Stack = createStackNavigator()
 
 const StackNavigation = () => {
-  const { user } = useAuth();
-  console.log('====================================');
-  console.log(user);
-  console.log('====================================');
+  const { user, loadingInitial } = useAuth();
+  //console.log(loadingInitial);
+  if(loadingInitial){
+    return <SplashScreen/>
+  }
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ?
@@ -23,7 +25,7 @@ const StackNavigation = () => {
           <Stack.Screen name="Main" component={HomeScreen} />
           <Stack.Screen name="Booking" component={BookingScreen} />
           <Stack.Screen name="Review" component={ReviewScreen} />
-          {/* <Stack.Screen name="Pay" component={PaymentScreen} /> */}
+          <Stack.Screen name="Pay" component={ShowPaymentScreen} />
         </> :
         <>
           <Stack.Screen name="Auth" component={AuthScreen} />

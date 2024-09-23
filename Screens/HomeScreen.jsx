@@ -7,8 +7,9 @@ import StationList from '../Components/StationList';
 import MapViewDirections from 'react-native-maps-directions';
 import { MAPS_API_KEY, API_URL } from '@env'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Alert from '../Components/Alert';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { setBookings } from '../redux/bookingsSlice';
+import Loading from '../Components/Loading';
 
 const ITEM_WIDTH = Dimensions.get('screen').width - 20;
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -30,6 +31,10 @@ function deg2rad(deg) {
 
 
 const HomeScreen = ({ navigation }) => {
+  const {user}= useAuth()
+  const dispatch = useDispatch();
+  const bookings = useSelector((state) => state.bookings.bookings);
+
   const [stations, setStations] = useState();
   const { location, locationLoaded } = useAuth();
   const [stationLocation, setStationLocation] = useState();
@@ -41,13 +46,27 @@ const HomeScreen = ({ navigation }) => {
     fetchStations();
   }, []);
 
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await fetch(`https://evrcs-backend.vercel.app/api/stations/bookings/${user._id}`);
+        const data = await response.json()
+        dispatch(setBookings(data.bookings)); 
+      } catch (error) {
+        console.error('Failed to fetch bookings:', error);
+      }
+    };
+
+    fetchBookings();
+  }, [dispatch]);
+
   const fetchStations = async () => {
     try {
       const response = await fetch(`${API_URL}/api/stations/`);
       const data = await response.json();
       setStations(data);
     } catch (error) {
-      console.error(error);
+      //console.error(error);
     }
   };
 
@@ -88,14 +107,23 @@ const HomeScreen = ({ navigation }) => {
 
   const handleNavigation = (index) => {
     const selectedLocation = stations[index];
+    const origin = `${location.latitude},${location.longitude}`
     const destination = `${selectedLocation.latitude},${selectedLocation.longitude}`;
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
+    Linking.openURL(url);
     setDestination(destination)
   }
+  const handleReview = (index) => {
+    let chargingStationId = stations[index]._id
+    let name = stations[index].name
+    navigation.navigate('Review', { chargingStationId, name });
+  }
   const handleOpenInGoogleMaps = () => {
-    console.log('CLicked');
+    //console.log('CLicked');
     const origin = `${location.latitude},${location.longitude}`
+    
     const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
-    console.log(url);
+    //console.log(url);
     Linking.openURL(url);
   };
 
@@ -103,7 +131,11 @@ const HomeScreen = ({ navigation }) => {
   const handleBooking = (index) => {
     let id = stations[index]._id
     let name = stations[index].name
+    //console.log(id, name);
     navigation.navigate('Booking', { id, name });
+  }
+  const handlePay = (index) => {
+    navigation.navigate('Pay');
   }
 
   const renderMarkers = () => {
@@ -184,6 +216,8 @@ const HomeScreen = ({ navigation }) => {
                   item={item}
                   index={index}
                   handleNavigation={handleNavigation}
+                  handleReview={handleReview}
+                  handlePay={handlePay}
                   handleBooking={handleBooking}
                 />
               )}
@@ -204,7 +238,7 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-      ) : <ActivityIndicator style={styles.loader} size="large" color="blue" />}
+      ) : <Loading color={'#101944'}/>}
 
 
     </View>
@@ -248,22 +282,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
   },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   btnsGoogle: {
     position: 'absolute',
     bottom: 140,
     right: 10,
-    zIndex: 20,
+    zIndex: 30,
     backgroundColor: '#101944',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
-    elevation: 5,
-
+    elevation: 15,
   },
   btnText: {
     color: "#fff",

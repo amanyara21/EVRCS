@@ -22,8 +22,8 @@ const styles = StyleSheet.create({
         borderRadius: width / 2,
         shadowColor: '#fff',
         shadowOffset: {
-            width: 0,
-            height: 0,
+            width: 2,
+            height: 2,
         },
         shadowOpacity: 1,
         shadowRadius: 20,

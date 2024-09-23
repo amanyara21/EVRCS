@@ -16,15 +16,21 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      setLoadingInitial(true);
-      await getToken();
-      await getLocation();
-      if (token) {
-        await fetchUser();
-      } else {
-        setUser(null);
+      try {
+        setLoadingInitial(true);
+        await getLocation();
+        const token = await getToken();
+        if (token) {
+          await fetchUser(token);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+
+      } finally {
+        setLoadingInitial(false);
       }
-      setLoadingInitial(false);
+
     };
 
     initializeAuth();
@@ -33,13 +39,15 @@ export const AuthProvider = ({ children }) => {
   const getToken = async () => {
     try {
       const storedToken = await AsyncStorage.getItem('jwtToken');
-      setToken(storedToken);
+      setToken(storedToken)
+      return storedToken
     } catch (err) {
-      console.error('Error fetching token from storage:', err);
+      //console.error('Error fetching token from storage:', err);
+      return null;
     }
   };
 
-  const fetchUser = async () => {
+  const fetchUser = async (token) => {
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/api/getuser`, {
@@ -56,7 +64,7 @@ export const AuthProvider = ({ children }) => {
       const userData = await response.json();
       setUser(userData);
     } catch (err) {
-      console.error('Error fetching user:', err);
+      //console.error('Error fetching user:', err);
     } finally {
       setLoading(false);
     }
@@ -72,17 +80,19 @@ export const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify({ email: email.toLowerCase().trim(), password }),
       });
+      //console.log(response);
       const data = await response.json();
+      //console.log(data);
       if (response.ok) {
         const token = data.token;
         setToken(token);
         await AsyncStorage.setItem('jwtToken', token);
       } else {
         setError(data);
-        console.log(data);
+        //console.log(data);
       }
     } catch (err) {
-      console.error('Error during login:', err);
+      //console.error('Error during login:', err);
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -108,7 +118,7 @@ export const AuthProvider = ({ children }) => {
         setError(data);
       }
     } catch (err) {
-      console.error('Error during signup:', err);
+      //console.error('Error during signup:', err);
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -121,7 +131,7 @@ export const AuthProvider = ({ children }) => {
       setToken(null);
       setUser(null);
     } catch (err) {
-      console.error('Error during logout:', err);
+      //console.error('Error during logout:', err);
     }
   };
 
@@ -134,7 +144,10 @@ export const AuthProvider = ({ children }) => {
         setLocationLoaded(true);
       },
       async (error) => {
-        console.error('Error fetching location:', error);
+        //console.error(`Error fetching location: `, error, );
+        if (error.code === 2) {
+          
+       }
         const storedLocation = await AsyncStorage.getItem('prevLocation');
         if (storedLocation) {
           setLocation(JSON.parse(storedLocation));

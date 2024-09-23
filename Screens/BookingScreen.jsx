@@ -3,11 +3,13 @@ import { View, TextInput, StyleSheet, Text, TouchableOpacity, Alert, ScrollView,
 import { TimePickerModal, DatePickerModal } from 'react-native-paper-dates';
 import Header from '../Components/Header';
 import { API_URL } from "@env"
+import { useDispatch } from 'react-redux';
+import { addBooking } from '../redux/bookingsSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BookingScreen = ({ route }) => {
     const [token, setToken] = useState(null);
-   
+    const dispatch = useDispatch()
     const { name, id } = route.params;
     // All three for Pickers Visibility
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -29,7 +31,7 @@ const BookingScreen = ({ route }) => {
     },[])
     useEffect(() => {
         getAvailableTimeSlots();
-    }, [date])
+    }, [date, isLoading])
 
     const onDismissDatePicker = () => {
         setShowDatePicker(false);
@@ -61,10 +63,8 @@ const BookingScreen = ({ route }) => {
         setShowEndTimePicker(false);
     };
 
-
-
-
     const handleBooking = async () => {
+        setIsLoading(true)
         if (!vehicleNumber || !startTime || !endTime) {
             Alert.alert('Error', 'Please enter all required fields');
             return;
@@ -87,13 +87,19 @@ const BookingScreen = ({ route }) => {
             });
 
             if (response.ok) {
+                const data = await response.json();
+                dispatch(addBooking(data));
+                console.log(data);
                 Alert.alert('Success', 'Booking Successful');
             } else {
                 const errorData = await response.json();
                 Alert.alert('Error', errorData.msg || 'Booking Failed');
             }
         } catch (error) {
+            console.log(error);
             Alert.alert('Error', 'An error occurred');
+        }finally{
+            setIsLoading(false)
         }
     };
 
@@ -102,10 +108,13 @@ const BookingScreen = ({ route }) => {
         try {
             const response = await fetch(`${API_URL}/api/stations/${id}/availability/${date}`)
             const data = await response.json();
+            if (!response.ok) {
+                throw Error("server error")
+            }
             setAvailableTimeslots(data)
             setIsLoading(false)
         } catch (error) {
-
+            setIsLoading(true)
         }
     }
     const getToken = async () => {
@@ -211,7 +220,7 @@ const BookingScreen = ({ route }) => {
                         <ActivityIndicator />
                     ) : (
                         <View style={styles.availtimeContainer}>
-                            {availableTimeslots.map((timeslot, index) => (
+                            {availableTimeslots && availableTimeslots.map((timeslot, index) => (
                                 <View key={index} style={styles.timeSlot}>
                                     <Text style={styles.timeSlotText}>
                                         {formatTime(timeslot.startTime)} - {formatTime(timeslot.endTime)}
@@ -303,22 +312,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#1c1c1e',
     },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 30,
-    },
-    footerText: {
-        color: '#fff',
-        textDecorationLine: 'underline',
-    },
     Availability: {
-        width: 320,
+        width: '100%',
         marginTop: 50,
+        padding:0
     },
     availText: {
         fontSize: 20,
         color: 'white',
+        textAlign:'center',
         fontWeight: 'bold',
     },
     availtimeContainer: {
@@ -328,14 +330,12 @@ const styles = StyleSheet.create({
     },
     timeSlot: {
         backgroundColor: '#fff',
-        borderRadius: 20,
+        borderRadius: 8,
         borderWidth: 1,
         borderColor: '#3498db',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
         margin: 5,
-        padding: 10,
-        width: "45%",
+        padding: 8,
+        width: "46%",
         marginTop: 10,
 
     },

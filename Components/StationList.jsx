@@ -8,14 +8,15 @@ import {
 
 const { width } = Dimensions.get('screen');
 
-const StationList = ({ item, index, handleNavigation, handleBooking }) => (
+const StationList = ({ item, index, handleNavigation, handleBooking,handlePay, handleReview }) => (
     <View style={styles.itemContainer}>
         <Text style={styles.name}>{item.name}</Text>
         <View style={styles.btnContainer}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button}
+                onPress={() => handleReview(index)}>
                 <Text style={styles.buttonText}>Reviews</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => handlePay()}>
                 <Text style={styles.buttonText}>Pay</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -49,18 +50,18 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         // elevation: 5,
     },
-    name: { 
-        color: 'black', 
-        fontSize: 24, 
-        fontWeight: 'bold', 
-        margin: 8 
+    name: {
+        color: 'black',
+        fontSize: 24,
+        fontWeight: 'bold',
+        margin: 8
     },
 
     btnContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'center',
-        justifyContent:"center"
+        justifyContent: "center"
     },
     button: {
         backgroundColor: '#fff',

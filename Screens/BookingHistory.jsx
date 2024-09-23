@@ -1,38 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { API_URL } from '@env'
-import useAuth from '../Hooks/useAuth';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { useSelector } from 'react-redux';
 import Header from '../Components/Header';
+import BookingCard from '../Components/BookingCard';
+import Loading from '../Components/Loading';
 
 const BookingHistory = () => {
-    const [loading, setLoading] = useState(true)
-    const { user } = useAuth();
     const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const allBookings = useSelector((state) => state.bookings.bookings);
+    console.log(allBookings);
 
     useEffect(() => {
-        fetchBookings();
-    }, []);
+        filterPastBookings();
+    }, [allBookings]);
 
-    const fetchBookings = async () => {
-        try {
-            const response = await fetch(`${API_URL}/api/stations/bookings/${user._id}`);
+    const filterPastBookings = () => {
+        const today = new Date();
+        const pastBookings = allBookings != null && allBookings.filter(booking => {
+            const bookingDate = new Date(booking.startTime);
+            return bookingDate < today;
+        });
 
-            const data = await response.json();
-
-            if (data.bookings != null && data.bookings.length!=0) {
-                const today = new Date();
-                const pastBookings = data.filter(booking => {
-                    const bookingDate = new Date(booking.startTime);
-                    return bookingDate < today;
-                });
-                setBookings(pastBookings);
-            }
-            setLoading(false)
-        } catch (error) {
-            console.log(error);
-        }
+        setBookings(pastBookings);
+        setLoading(false);
     };
-
 
 
     return (
@@ -40,7 +33,7 @@ const BookingHistory = () => {
             <Header title="Booking History" />
             <View style={styles.container}>
                 {loading ? (
-                    <ActivityIndicator style={styles.loader} size="large" color="#0000ff" />
+                    <Loading />
                 ) : (
                     <FlatList
                         data={bookings}
@@ -51,7 +44,7 @@ const BookingHistory = () => {
                 )}
             </View>
         </>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -64,16 +57,16 @@ const styles = StyleSheet.create({
         paddingRight: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        borderTopLeftRadius:25,
-        borderTopRightRadius:25,
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
     },
     loader: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    notAvail:{
-        fontSize:18
+    notAvail: {
+        fontSize: 18
     }
 });
 

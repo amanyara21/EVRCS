@@ -26,7 +26,10 @@ const styles=StyleSheet.create({
         alignItems:'center',
     },
     btn:{
-        paddingVertical:8,
+        width:60,
+        height:50,
+        padding:8,
+        marginLeft:10,
     },
     text:{
         flex:1,

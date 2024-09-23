@@ -2,9 +2,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './Hooks/useAuth';
 import DrawerNavigation from './Navigation/DrawerNavigation';
 import { Alert } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
+import { StripeProvider } from '@stripe/stripe-react-native';
 import { useEffect } from 'react';
 import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
 const App = () => {
   useEffect(() => {
@@ -25,20 +27,18 @@ const App = () => {
   };
 
 
-  NetInfo.fetch().then(state => {
-    if (state.isConnected) {
-      console.log(state);
-    } else {
-      Alert.alert('Please turn on your internet connection.');
-    }
-  });
 
   return (
+
     <AuthProvider>
-      <NavigationContainer>
-        <DrawerNavigation />
-      </NavigationContainer>
+      <Provider store={store}>
+        <NavigationContainer>
+          <DrawerNavigation />
+        </NavigationContainer>
+      </Provider>
     </AuthProvider>
   )
 }
 export default App
+
+
