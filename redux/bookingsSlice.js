@@ -13,11 +13,9 @@ const bookingsSlice = createSlice({
       state.bookings = action.payload; 
     },
     addBooking: (state, action) => {
-        console.log(state, action);
       state.bookings.push(action.payload); 
     },
     cancelBooking: (state, action) => {
-        console.log(state, action);
         state.bookings = state.bookings.filter(booking => booking.bookingId !== action.payload);
     },
   },

@@ -35,7 +35,7 @@ const ShowPaymentScreen = () => {
         const totalAmount = calculateTotalAmount();
         Alert.alert('Payment', `Your total amount is $${totalAmount}. Proceed to payment?`, [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Pay', onPress: () => console.log('Proceed to payment logic') }, // Add your payment logic here
+            { text: 'Pay', onPress: () => console.log('Proceed to payment logic') }, 
         ]);
     };
 

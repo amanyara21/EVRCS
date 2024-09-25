@@ -85,18 +85,19 @@ const BookingScreen = ({ route }) => {
                 },
                 body: JSON.stringify(bookingDetails),
             });
+            console.log(`${API_URL}/api/stations/${id}/bookings/`);
+            console.log(JSON.stringify(bookingDetails));
 
             if (response.ok) {
                 const data = await response.json();
-                dispatch(addBooking(data));
                 console.log(data);
+                dispatch(addBooking(data));
                 Alert.alert('Success', 'Booking Successful');
             } else {
                 const errorData = await response.json();
                 Alert.alert('Error', errorData.msg || 'Booking Failed');
             }
         } catch (error) {
-            console.log(error);
             Alert.alert('Error', 'An error occurred');
         }finally{
             setIsLoading(false)

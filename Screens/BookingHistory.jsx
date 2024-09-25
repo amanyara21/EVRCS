@@ -10,7 +10,6 @@ const BookingHistory = () => {
     const [loading, setLoading] = useState(true);
 
     const allBookings = useSelector((state) => state.bookings.bookings);
-    console.log(allBookings);
 
     useEffect(() => {
         filterPastBookings();

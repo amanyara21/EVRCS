@@ -33,7 +33,6 @@ function deg2rad(deg) {
 const HomeScreen = ({ navigation }) => {
   const {user}= useAuth()
   const dispatch = useDispatch();
-  const bookings = useSelector((state) => state.bookings.bookings);
 
   const [stations, setStations] = useState();
   const { location, locationLoaded } = useAuth();

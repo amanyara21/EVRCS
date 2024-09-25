@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const BookingCard = ({ booking, onCancelBooking, price }) => {
-    console.log(booking);
     const formatTime = (timeString) => {
         const time = new Date(timeString);
         const hours = time.getUTCHours();
