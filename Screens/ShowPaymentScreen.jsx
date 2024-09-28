@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
-import useAuth from '../Hooks/useAuth';
 import BookingCard from '../Components/BookingCard';
 import Header from '../Components/Header';
 import Loading from '../Components/Loading';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useStripe } from '@stripe/stripe-react-native';
+import {API_URL} from '@env'
 
 const ShowPaymentScreen = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
 
     const allBookings = useSelector((state) => state.bookings.bookings);
 
@@ -33,11 +36,49 @@ const ShowPaymentScreen = () => {
 
     const handlePayment = () => {
         const totalAmount = calculateTotalAmount();
-        Alert.alert('Payment', `Your total amount is $${totalAmount}. Proceed to payment?`, [
+        Alert.alert('Payment', `Your total amount is ₹${totalAmount}. Proceed to payment?`, [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Pay', onPress: () => console.log('Proceed to payment logic') }, 
+            { text: 'Pay', onPress: () => onCheckout(totalAmount) }, 
         ]);
     };
+    const onCheckout = async (totalAmount) => {
+        const response = await fetch(`${API_URL}/api/payments/intent`,{
+            method: 'POST',
+            headers:{
+                'content-type':'application/json',
+            },
+            body:JSON.stringify({amount:totalAmount*100})
+        })
+        const data = await response.json()
+        if (response.error) {
+            Alert.alert('Something went wrong');
+            return;
+        }
+        
+        const initResponse = await initPaymentSheet({
+            merchantDisplayName: 'Aman Kumar',
+            paymentIntentClientSecret: data.paymentIntent,
+        });
+        
+        if (initResponse.error) {
+          console.log(initResponse.error);
+          Alert.alert('Something went wrong');
+          return;
+        }
+    
+        const paymentResponse = await presentPaymentSheet();
+    
+        if (paymentResponse.error) {
+          Alert.alert(
+            `Error code: ${paymentResponse.error.code}`,
+            paymentResponse.error.message
+          );
+          console.log(paymentResponse.error.message);
+          return;
+        }
+    
+        console.log("Payment Done");
+      };
 
     return (
         <>

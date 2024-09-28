@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions, Text, FlatList, Linking, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, FlatList, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import useAuth from '../Hooks/useAuth';
 import Icon from 'react-native-vector-icons/FontAwesome6'
@@ -7,7 +7,7 @@ import StationList from '../Components/StationList';
 import MapViewDirections from 'react-native-maps-directions';
 import { MAPS_API_KEY, API_URL } from '@env'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setBookings } from '../redux/bookingsSlice';
 import Loading from '../Components/Loading';
 
@@ -77,10 +77,6 @@ const HomeScreen = ({ navigation }) => {
     });
   },[stations,location])
 
-  
-
-
-  
 
   const handleScroll = (event) => {
     setDestination(null)
@@ -112,11 +108,13 @@ const HomeScreen = ({ navigation }) => {
     Linking.openURL(url);
     setDestination(destination)
   }
+
   const handleReview = (index) => {
     let chargingStationId = stations[index]._id
     let name = stations[index].name
     navigation.navigate('Review', { chargingStationId, name });
   }
+
   const handleOpenInGoogleMaps = () => {
     //console.log('CLicked');
     const origin = `${location.latitude},${location.longitude}`

@@ -1,4 +1,3 @@
-// src/redux/bookingsSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
