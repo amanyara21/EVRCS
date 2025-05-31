@@ -1,4 +1,24 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Electric Vehicle Charging Station Booking App ⚡🔋
+
+## Overview
+The Electric Vehicle Charging Station Booking App is designed to provide a seamless experience for EV owners by allowing them to locate and book charging stations in real time. The app integrates **Google Maps API** to display nearby charging stations based on the user’s location, ensuring efficient navigation. Users can check station availability, read reviews, and make secure payments directly within the app.
+
+## Features
+- 📍 **Real-Time Charging Station Locator** using Google Maps API
+- 📊 **Sorting of Charging Stations** based on proximity to the user
+- 📅 **Booking System** to reserve charging slots and check availability
+- ⭐ **User Reviews & Ratings** for charging stations
+- 💳 **Secure Payments** through Stripe API
+- 🔄 **Real-Time Updates** on station availability
+
+## Technologies Used
+- **Frontend:** React Native
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **APIs & Integrations:** Google Maps API, Stripe API
+
+## Demo Video 🎥
+[![EV Charging App Demo](https://img.youtube.com/vi/5VQ6mqACOKA/0.jpg)]((https://youtube.com/shorts/5VQ6mqACOKA))
 
 # Getting Started
 
